@@ -1,128 +1,413 @@
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
+import axios from "axios"
 
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-} from "react-router-dom"
-
-import Navbar from "./components/Navbar"
-
-import Dashboard from "./pages/Dashboard"
-import Team from "./pages/Team"
-import Profile from "./pages/Profile"
-import Login from "./pages/Login"
+import "./App.css"
 
 function App() {
 
-  const [goals, setGoals] = useState(() => {
+  // =========================
+  // AUTH STATES
+  // =========================
 
-    const savedGoals = localStorage.getItem("goals")
+  const [isLogin, setIsLogin] = useState(true)
 
-    return savedGoals
-      ? JSON.parse(savedGoals)
-      : [
-          {
-            task: "Solve 5 Leetcode Problems",
-            completed: true,
-          },
-          {
-            task: "Study DBMS for 2 Hours",
-            completed: false,
-          },
-        ]
-  })
+  const [name, setName] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
 
+  const [token, setToken] = useState(
+    localStorage.getItem("token") || ""
+  )
+
+  // =========================
+  // GOAL STATES
+  // =========================
+
+  const [goals, setGoals] = useState([])
   const [newGoal, setNewGoal] = useState("")
 
-  useEffect(() => {
-    localStorage.setItem("goals", JSON.stringify(goals))
-  }, [goals])
+  // =========================
+  // FETCH GOALS
+  // =========================
 
-  const addGoal = () => {
+  const fetchGoals = async () => {
 
-    if (newGoal.trim() === "") return
+    try {
 
-    setGoals([
-      ...goals,
-      {
-        task: newGoal,
-        completed: false,
-      },
-    ])
+      const response = await axios.get(
+        "http://localhost:5000/api/goals",
 
-    setNewGoal("")
-  }
-
-  const toggleGoal = (index) => {
-
-    const updatedGoals = goals.map((goal, i) => {
-
-      if (i === index) {
-        return {
-          ...goal,
-          completed: !goal.completed,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
         }
-      }
+      )
 
-      return goal
-    })
+      setGoals(response.data)
 
-    setGoals(updatedGoals)
+    } catch (error) {
+
+      console.log(error)
+    }
   }
 
-  const deleteGoal = (index) => {
+  // =========================
+  // LOAD GOALS
+  // =========================
 
-    const updatedGoals = goals.filter(
-      (_, i) => i !== index
-    )
+  useEffect(() => {
 
-    setGoals(updatedGoals)
+    if (token) {
+      fetchGoals()
+    }
+
+  }, [token])
+
+  // =========================
+  // REGISTER
+  // =========================
+
+  const registerUser = async () => {
+
+    try {
+
+      await axios.post(
+        "http://localhost:5000/api/auth/register",
+
+        {
+          name,
+          email,
+          password,
+        }
+      )
+
+      alert("Registration Successful")
+
+      setIsLogin(true)
+
+    } catch (error) {
+
+      console.log(error)
+    }
   }
 
-  return (
-    <BrowserRouter>
+  // =========================
+  // LOGIN
+  // =========================
 
-      <div className="min-h-screen bg-gray-900 text-white p-8">
+  const loginUser = async () => {
 
-        <Navbar />
+    try {
 
-        <Routes>
+      const response = await axios.post(
+        "http://localhost:5000/api/auth/login",
 
-          <Route
-            path="/"
-            element={
-              <Dashboard
-                goals={goals}
-                newGoal={newGoal}
-                setNewGoal={setNewGoal}
-                addGoal={addGoal}
-                toggleGoal={toggleGoal}
-                deleteGoal={deleteGoal}
-              />
+        {
+          email,
+          password,
+        }
+      )
+
+      localStorage.setItem(
+        "token",
+        response.data.token
+      )
+
+      setToken(response.data.token)
+
+    } catch (error) {
+
+      console.log(error)
+    }
+  }
+
+  // =========================
+  // LOGOUT
+  // =========================
+
+  const logoutUser = () => {
+
+    localStorage.removeItem("token")
+
+    setToken("")
+
+    setGoals([])
+  }
+
+  // =========================
+  // ADD GOAL
+  // =========================
+
+  const addGoal = async () => {
+
+    if (!newGoal.trim()) return
+
+    try {
+
+      const response = await axios.post(
+
+        "http://localhost:5000/api/goals",
+
+        {
+          task: newGoal,
+        },
+
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        }
+      )
+
+      setGoals([
+        ...goals,
+        response.data,
+      ])
+
+      setNewGoal("")
+
+    } catch (error) {
+
+      console.log(error)
+    }
+  }
+
+  // =========================
+  // DELETE GOAL
+  // =========================
+
+  const deleteGoal = async (id) => {
+
+    try {
+
+      await axios.delete(
+
+        `http://localhost:5000/api/goals/${id}`,
+
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        }
+      )
+
+      setGoals(
+        goals.filter(
+          (goal) => goal._id !== id
+        )
+      )
+
+    } catch (error) {
+
+      console.log(error)
+    }
+  }
+
+  // =========================
+  // TOGGLE GOAL
+  // =========================
+
+  const toggleGoal = async (id) => {
+
+    try {
+
+      const response = await axios.put(
+
+        `http://localhost:5000/api/goals/${id}`,
+
+        {},
+
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          }
+        }
+      )
+
+      setGoals(
+
+        goals.map((goal) =>
+
+          goal._id === id
+            ? response.data
+            : goal
+        )
+      )
+
+    } catch (error) {
+
+      console.log(error)
+    }
+  }
+
+  // =========================
+  // AUTH SCREEN
+  // =========================
+
+  if (!token) {
+
+    return (
+
+      <div className="auth-container">
+
+        <h1>
+          Placement War-Room
+        </h1>
+
+        <div className="auth-box">
+
+          {!isLogin && (
+
+            <input
+              type="text"
+              placeholder="Name"
+              value={name}
+              onChange={(e) =>
+                setName(e.target.value)
+              }
+            />
+          )}
+
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) =>
+              setEmail(e.target.value)
             }
           />
 
-          <Route
-            path="/team"
-            element={<Team />}
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) =>
+              setPassword(e.target.value)
+            }
           />
 
-          <Route
-            path="/profile"
-            element={<Profile />}
-          />
+          <button
+            onClick={
+              isLogin
+                ? loginUser
+                : registerUser
+            }
+          >
 
-          <Route
-            path="/login"
-            element={<Login />}
-          />
+            {isLogin
+              ? "Login"
+              : "Register"}
 
-        </Routes>
+          </button>
+
+          <p
+            onClick={() =>
+              setIsLogin(!isLogin)
+            }
+            className="toggle-auth"
+          >
+
+            {isLogin
+              ? "Need an account? Register"
+              : "Already have an account? Login"}
+
+          </p>
+
+        </div>
+
+      </div>
+    )
+  }
+
+  // =========================
+  // MAIN APP
+  // =========================
+
+  return (
+
+    <div className="app">
+
+      <div className="top-bar">
+
+        <h1>
+          Placement War-Room
+        </h1>
+
+        <button onClick={logoutUser}>
+          Logout
+        </button>
 
       </div>
 
-    </BrowserRouter>
+      <div className="goal-input">
+
+        <input
+          type="text"
+          placeholder="Enter goal..."
+          value={newGoal}
+          onChange={(e) =>
+            setNewGoal(e.target.value)
+          }
+        />
+
+        <button onClick={addGoal}>
+          Add Goal
+        </button>
+
+      </div>
+
+      <div className="goals-container">
+
+        {goals.map((goal) => (
+
+          <div
+            key={goal._id}
+            className="goal-card"
+          >
+
+            <h3
+              style={{
+                textDecoration:
+                  goal.completed
+                    ? "line-through"
+                    : "none",
+              }}
+            >
+              {goal.task}
+            </h3>
+
+            <p>
+
+              {goal.completed
+                ? "✅ Completed"
+                : "⏳ Pending"}
+
+            </p>
+
+            <button
+              onClick={() =>
+                toggleGoal(goal._id)
+              }
+            >
+              Toggle
+            </button>
+
+            <button
+              onClick={() =>
+                deleteGoal(goal._id)
+              }
+            >
+              Delete
+            </button>
+
+          </div>
+
+        ))}
+
+      </div>
+
+    </div>
   )
 }
 
