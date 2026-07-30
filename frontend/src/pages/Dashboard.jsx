@@ -1,14 +1,107 @@
-import StatsCard from "../components/StatsCard"
-import GoalCard from "../components/GoalCard"
+import { useEffect, useState } from "react";
+import API from "../services/api";
 
-function Dashboard({
-  goals,
-  newGoal,
-  setNewGoal,
-  addGoal,
-  toggleGoal,
-  deleteGoal,
-}) {
+import StatsCard from "../components/StatsCard";
+import GoalCard from "../components/GoalCard";
+
+function Dashboard() {
+
+  const [goals, setGoals] = useState([]);
+  const [newGoal, setNewGoal] = useState("");
+  const [stats, setStats] = useState({
+  dsaSolved: 0,
+  studyHours: 0,
+  streak: 0,
+  });
+
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+
+  fetchGoals();
+  fetchDashboard();
+
+}, []);
+
+  const fetchDashboard = async () => {
+
+  try {
+
+    const res = await API.get("/dashboard");
+
+    setStats(res.data.stats);
+
+    setUser(res.data.user);
+
+
+  } catch(err) {
+
+    console.log(err);
+
+  }
+
+};
+
+  const fetchGoals = async () => {
+    try {
+      const res = await API.get("/goals");
+      setGoals(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const addGoal = async () => {
+
+    if (!newGoal.trim()) return;
+
+    try {
+
+      const res = await API.post("/goals", {
+        task: newGoal,
+      });
+
+      setGoals([...goals, res.data]);
+      setNewGoal("");
+
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const deleteGoal = async (id) => {
+
+    try {
+
+      await API.delete(`/goals/${id}`);
+
+      setGoals(
+        goals.filter(goal => goal._id !== id)
+      );
+
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const toggleGoal = async (id) => {
+
+    try {
+
+      const res = await API.put(`/goals/${id}`);
+
+      setGoals(
+        goals.map(goal =>
+          goal._id === id
+            ? res.data
+            : goal
+        )
+      );
+
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <div>
@@ -16,7 +109,7 @@ function Dashboard({
       <div className="mt-10">
 
         <h1 className="text-5xl font-bold text-blue-400">
-          Placement War-Room
+         Welcome {user?.username || "Warrior"} 👋
         </h1>
 
         <p className="mt-4 text-gray-300 text-xl">
@@ -30,20 +123,19 @@ function Dashboard({
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-10">
 
         <StatsCard
-          title="DSA Questions"
-          value="143"
+        title="DSA Questions"
+        value={stats.dsaSolved}
         />
 
-        <StatsCard
-          title="Study Hours"
-          value="87"
-        />
+      <StatsCard
+        title="Study Hours"
+        value={stats.studyHours}
+      />
 
-        <StatsCard
-          title="Current Streak"
-          value="12 Days"
-        />
-
+      <StatsCard
+        title="Current Streak"
+        value={`${stats.streak} Days`}
+      />
       </div>
 
       {/* Goals */}
@@ -71,15 +163,15 @@ function Dashboard({
 
         <div className="space-y-4">
 
-          {goals.map((goal, index) => (
+          {goals.map((goal) => (
+
             <GoalCard
-              key={index}
-              task={goal.task}
-              completed={goal.completed}
+              key={goal._id}
+              goal={goal}
               toggleGoal={toggleGoal}
               deleteGoal={deleteGoal}
-              index={index}
             />
+
           ))}
 
         </div>
@@ -87,7 +179,7 @@ function Dashboard({
       </div>
 
     </div>
-  )
+  );
 }
 
-export default Dashboard
+export default Dashboard;

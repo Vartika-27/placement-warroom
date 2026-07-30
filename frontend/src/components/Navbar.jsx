@@ -1,41 +1,42 @@
-import { Link } from "react-router-dom"
+import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 function Navbar() {
 
+  const { logout } = useAuth();
+  const navigate = useNavigate();
+
+
+  const handleLogout = () => {
+
+    logout();
+
+    navigate("/login");
+
+  };
+
+
   return (
-    <nav className="flex items-center justify-between bg-gray-800 px-8 py-4 rounded-xl">
+
+    <nav className="w-full bg-slate-900 p-5 flex justify-between items-center">
 
       <h1 className="text-2xl font-bold text-blue-400">
-        War-Room
+        Placement War-Room
       </h1>
 
-      <div className="flex gap-6 text-gray-300">
 
-        <Link
-          to="/"
-          className="hover:text-white"
-        >
-          Dashboard
-        </Link>
+      <button
+        onClick={handleLogout}
+        className="bg-red-500 px-5 py-2 rounded-xl hover:bg-red-600"
+      >
+        Logout
+      </button>
 
-        <Link
-          to="/team"
-          className="hover:text-white"
-        >
-          Team
-        </Link>
-
-        <Link
-          to="/profile"
-          className="hover:text-white"
-        >
-          Profile
-        </Link>
-
-      </div>
 
     </nav>
-  )
+
+  );
 }
 
-export default Navbar
+
+export default Navbar;

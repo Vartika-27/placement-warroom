@@ -8,6 +8,10 @@ const goalRoutes = require("./routes/goalRoutes")
 
 const authRoutes = require("./routes/authRoutes")
 
+const dsaRoutes = require("./routes/dsaRoutes");
+
+const dashboardRoutes = require("./routes/dashboardRoutes");
+
 // Load Environment Variables
 
 dotenv.config()
@@ -24,6 +28,8 @@ app.use(cors())
 app.use(express.json())
 app.use("/api/goals", goalRoutes)
 app.use("/api/auth", authRoutes)
+app.use("/api/dsa", dsaRoutes)
+app.use("/api/dashboard", dashboardRoutes)
 // Test Route
 
 app.get("/", (req, res) => {

@@ -1,47 +1,43 @@
-function GoalCard({
-  task,
-  completed,
-  toggleGoal,
-  deleteGoal,
-  index,
-}) {
-
+function GoalCard({ goal, toggleGoal, deleteGoal }) {
   return (
-    <div className="flex items-center justify-between bg-gray-800 p-4 rounded-xl">
+    <div className="bg-slate-800 rounded-xl p-5 flex justify-between items-center">
 
-      <div className="flex items-center gap-4">
+      <div>
 
-        <button
-          onClick={() => toggleGoal(index)}
-          className={`w-6 h-6 rounded-full border-2 ${
-            completed
-              ? "bg-green-400 border-green-400"
-              : "border-gray-400"
+        <h3
+          className={`text-xl font-semibold ${
+            goal.completed ? "line-through text-gray-400" : ""
           }`}
         >
-        </button>
+          {goal.task}
+        </h3>
 
-        <span
-          className={`text-lg ${
-            completed
-              ? "line-through text-gray-500"
-              : ""
-          }`}
-        >
-          {task}
-        </span>
+        <p className="text-sm text-gray-400 mt-1">
+          {goal.completed ? "✅ Completed" : "⏳ Pending"}
+        </p>
 
       </div>
 
-      <button
-        onClick={() => deleteGoal(index)}
-        className="bg-red-500 px-4 py-2 rounded-lg hover:bg-red-600 transition"
-      >
-        Delete
-      </button>
+      <div className="flex gap-3">
+
+        <button
+          onClick={() => toggleGoal(goal._id)}
+          className="bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg"
+        >
+          Toggle
+        </button>
+
+        <button
+          onClick={() => deleteGoal(goal._id)}
+          className="bg-red-500 hover:bg-red-600 px-4 py-2 rounded-lg"
+        >
+          Delete
+        </button>
+
+      </div>
 
     </div>
-  )
+  );
 }
 
-export default GoalCard
+export default GoalCard;
