@@ -1,142 +1,456 @@
-# Placement War-Room
+# ⚔️ Placement War-Room
 
-A productivity and accountability web application designed for placement preparation, collaborative goal tracking, and consistent skill development.
+![React](https://img.shields.io/badge/React-19.0-61DAFB?logo=react&logoColor=black)
+![Vite](https://img.shields.io/badge/Vite-8.0-646CFF?logo=vite)
+![Tailwind CSS](https://img.shields.io/badge/TailwindCSS-v4.0-38B2AC?logo=tailwindcss)
+![Node.js](https://img.shields.io/badge/Node.js-Express-339933?logo=node.js)
+![MongoDB](https://img.shields.io/badge/MongoDB-Mongoose-47A248?logo=mongodb)
+![JWT](https://img.shields.io/badge/Auth-JWT%20%26%20Bcrypt-black)
+![Zod](https://img.shields.io/badge/Validation-Zod-blue)
 
-The platform helps students:
 
-* Track daily study goals
-* Monitor placement preparation progress
-* Maintain accountability within a small peer group
-* Build consistency through streak systems and progress visibility
+## 🚀 Overview
 
----
+**Placement War-Room** is a full-stack placement preparation management platform designed to help students organize, track, and optimize their technical preparation journey.
 
-# Project Purpose
+The platform combines:
 
-The primary goal of this project is to create a focused productivity environment for placement preparation.
+- Daily goal tracking
+- DSA progress monitoring
+- Topic-wise coding analytics
+- Personal productivity metrics
+- Secure authentication
 
-Most students struggle with:
+into a single workspace.
 
-* inconsistency
-* lack of accountability
-* poor tracking systems
-* unstructured preparation
+The goal is to replace scattered spreadsheets, notes, and multiple tracking tools with one centralized placement preparation dashboard.
 
-Placement War-Room aims to solve these issues by combining:
-
-* task tracking
-* team accountability
-* progress visualization
-* structured preparation workflows
 
 ---
 
-# Current Features
+# 🎯 Problem Statement
 
-## Goal Management
+Placement preparation is usually fragmented across multiple platforms:
 
-* Add daily goals
-* Mark goals as completed
-* Delete goals dynamically
+- LeetCode for coding progress
+- Notion/Excel for tracking
+- Separate notes for revision
+- Reminders for daily goals
 
-## Persistent Storage
+Students lack a unified system to understand:
 
-* Goals remain saved after browser refresh using localStorage
+- What they have completed
+- What topics need improvement
+- Whether they are maintaining consistency
 
-## Team Accountability
 
-* Team leaderboard interface
-* Progress visibility
-* Streak display
+Placement War-Room solves this by creating a personalized preparation command center.
 
-## Multi-Page Navigation
-
-* Dashboard page
-* Team page
-* Profile page
-* Login page
-
-## Responsive UI
-
-* Modern responsive interface using Tailwind CSS
 
 ---
 
-# Tech Stack
+# ✨ Features
+
+
+## 🔐 Secure Authentication
+
+- User registration and login
+- Password hashing using `bcryptjs`
+- JWT-based authentication
+- Protected routes using authentication middleware
+- Persistent login sessions
+
+
+---
+
+## 📋 Goal Management
+
+Users can create and manage daily preparation goals.
+
+Features:
+
+- Create study goals
+- Mark goals as completed
+- Delete completed or outdated goals
+- User-specific goal tracking
+
+
+---
+
+## 💻 DSA Progress Tracker
+
+Track coding preparation in a structured way.
+
+Features:
+
+- Add solved coding problems
+- Store:
+  - Problem title
+  - Topic
+  - Difficulty
+  - Platform
+  - Problem URL
+  - Revision notes
+
+- Difficulty analytics:
+  - Easy
+  - Medium
+  - Hard
+
+- Topic-based progress tracking
+
+
+---
+
+## 📊 DSA Analytics Dashboard
+
+Visualize coding progress through:
+
+- Total solved questions
+- Difficulty distribution
+- Topic completion metrics
+- Topic-wise targets
+
+
+Example:
+
+```
+Arrays
+
+Easy:   15/25
+Medium: 10/20
+Hard:    3/10
+
+Progress: 45%
+```
+
+
+---
+
+## 📈 Personalized Dashboard
+
+Dashboard provides:
+
+- User profile information
+- Goal completion overview
+- DSA progress statistics
+- Preparation metrics
+
+
+---
+
+# 📸 Screenshots
+
+
+## Login
+
+(Add screenshot here)
+
+```
+screenshots/login.png
+```
+
+
+## Dashboard
+
+(Add screenshot here)
+
+```
+screenshots/dashboard.png
+```
+
+
+## DSA Tracker
+
+(Add screenshot here)
+
+```
+screenshots/dsa.png
+```
+
+
+---
+
+# 🏗️ System Architecture
+
+
+```mermaid
+graph TD
+
+A[React Frontend] -->|Axios REST API| B[Express Backend]
+
+B --> C[CORS + JSON Middleware]
+
+C --> D[Route Layer]
+
+D --> E[Authentication Middleware]
+
+D --> F[Zod Validation]
+
+E --> G[Controllers]
+
+F --> G
+
+G --> H[Mongoose Models]
+
+H --> I[(MongoDB Database)]
+```
+
+
+---
+
+# 📂 Project Structure
+
+
+```
+placement-warroom/
+
+│
+├── backend/
+
+│   ├── config/
+│   │   └── db.js
+
+│   ├── controllers/
+│   │   ├── authController.js
+│   │   ├── dashboardController.js
+│   │   ├── dsaController.js
+│   │   └── goalController.js
+
+│   ├── middleware/
+│   │   ├── authMiddleware.js
+│   │   └── validate.js
+
+│   ├── models/
+│   │   ├── User.js
+│   │   ├── Goal.js
+│   │   ├── SolvedQuestion.js
+│   │   └── DsaTopic.js
+
+│   ├── routes/
+│   │   ├── authRoutes.js
+│   │   ├── dashboardRoutes.js
+│   │   ├── dsaRoutes.js
+│   │   └── goalRoutes.js
+
+│   ├── validators/
+│   │   ├── authValidator.js
+│   │   ├── dsaValidator.js
+│   │   └── goalValidator.js
+
+│   └── server.js
+
+
+│
+├── frontend/
+
+│   ├── src/
+
+│   │   ├── components/
+│   │   │   ├── Navbar.jsx
+│   │   │   ├── StatsCard.jsx
+│   │   │   ├── GoalCard.jsx
+│   │   │   ├── DSAStats.jsx
+│   │   │   └── TopicProgress.jsx
+
+│   │   ├── context/
+│   │   │   └── AuthContext.jsx
+
+│   │   ├── layouts/
+│   │   │   └── MainLayout.jsx
+
+│   │   ├── pages/
+│   │   │   ├── Dashboard.jsx
+│   │   │   ├── DSA.jsx
+│   │   │   ├── Login.jsx
+│   │   │   ├── Profile.jsx
+│   │   │   └── Team.jsx
+
+│   │   ├── services/
+│   │   │   └── api.js
+
+│   │   └── App.jsx
+
+│   └── package.json
+
+```
+
+
+---
+
+# 📡 API Documentation
+
+
+| Method | Endpoint | Authentication | Description |
+|-|-|-|-|
+| POST | `/api/auth/register` | ❌ | Register user |
+| POST | `/api/auth/login` | ❌ | Login and receive JWT |
+| GET | `/api/dashboard` | ✅ | Fetch dashboard statistics |
+| GET | `/api/goals` | ✅ | Get user goals |
+| POST | `/api/goals` | ✅ | Create goal |
+| PUT | `/api/goals/:id` | ✅ | Toggle goal status |
+| DELETE | `/api/goals/:id` | ✅ | Delete goal |
+| POST | `/api/dsa/question` | ✅ | Add solved question |
+| GET | `/api/dsa/questions` | ✅ | Fetch solved questions |
+| GET | `/api/dsa/topics` | ✅ | Fetch topic analytics |
+| DELETE | `/api/dsa/question/:id` | ✅ | Delete solved question |
+
+
+Protected routes require:
+
+```
+Authorization: Bearer <JWT_TOKEN>
+```
+
+
+---
+
+# ⚙️ Installation
+
+
+## Prerequisites
+
+- Node.js
+- MongoDB Atlas or Local MongoDB
+
+
+---
+
+## Clone Repository
+
+```bash
+git clone https://github.com/<username>/placement-warroom.git
+
+cd placement-warroom
+```
+
+
+---
+
+# Backend Setup
+
+
+```bash
+cd backend
+
+npm install
+```
+
+
+Create `.env`
+
+```env
+PORT=5000
+
+MONGO_URI=your_mongodb_connection_string
+
+JWT_SECRET=your_secret_key
+```
+
+
+Run backend:
+
+```bash
+npm run dev
+```
+
+
+Backend runs on:
+
+```
+http://localhost:5000
+```
+
+
+---
+
+# Frontend Setup
+
+
+```bash
+cd frontend
+
+npm install
+
+npm run dev
+```
+
+
+Frontend runs on:
+
+```
+http://localhost:5173
+```
+
+
+---
+
+# 🛠️ Tech Stack
+
 
 ## Frontend
 
-* React
-* Vite
-* Tailwind CSS
-* React Router DOM
+- React 19
+- Vite
+- Tailwind CSS
+- React Router
+- Axios
 
-## State Management
 
-* React Hooks
+## Backend
 
-  * useState
-  * useEffect
+- Node.js
+- Express.js
+- JWT Authentication
+- bcryptjs
+- Zod Validation
 
-## Storage
 
-* Browser localStorage
+## Database
 
----
+- MongoDB
+- Mongoose ODM
 
-# Folder Structure
-
-src/
-│
-├── components/
-├── pages/
-├── App.jsx
-├── main.jsx
-└── index.css
 
 ---
 
-# Learning Objectives
+# 🛣️ Roadmap
 
-This project is also being used as a structured learning system for:
 
-* frontend engineering
-* React architecture
-* component-based design
-* state management
-* routing systems
-* scalable project structuring
-* future backend integration
+## Completed
 
----
+✅ Authentication system
 
-# Planned Features
+✅ Protected routes
 
-* User authentication
-* Backend API integration
-* MongoDB database
-* Real-time team synchronization
-* Daily streak system
-* Analytics dashboard
-* Placement roadmap tracking
-* Contest tracking
-* Mock interview scheduling
+✅ Goal tracking
 
----
+✅ DSA tracker
 
-# Project Status
+✅ Topic analytics
 
-Frontend Foundation Phase Completed
 
-Current Focus:
+## Planned
 
-* frontend architecture
-* documentation
-* engineering discipline
-* backend preparation
+⬜ Study hour tracking
+
+⬜ Automated streak calculation
+
+⬜ Interview preparation tracker
+
+⬜ Resume analyzer
+
+⬜ AI placement mentor
+
+⬜ Team leaderboard
+
 
 ---
 
-# Author
+# 👨‍💻 Author
 
-Developed by Vartika Pandey as part of a structured placement preparation and software engineering learning journey.
+
+Developed by **Vartika Pandey**
+
+A full-stack engineering project built to improve placement preparation through structured tracking, analytics, and accountability.
+
